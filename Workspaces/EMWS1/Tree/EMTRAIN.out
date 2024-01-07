@@ -1,0 +1,26 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Variable Summary
+
+          Measurement    Frequency
+Role         Level         Count
+
+ID         INTERVAL          1    
+ID         NOMINAL           1    
+INPUT      INTERVAL          4    
+INPUT      NOMINAL           5    
+TARGET     INTERVAL          1    
+TIMEID     INTERVAL          1    
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Predicted and decision variables
+
+Type         Variable         Label
+
+TARGET       Churn                       
+PREDICTED    P_Churn     Predicted: Churn
+RESIDUAL     R_Churn     Residual: Churn 

@@ -1,0 +1,562 @@
+*------------------------------------------------------------*
+* Training Log
+Date:                January 07, 2024
+Time:                02:08:47
+*------------------------------------------------------------*
+14716  proc freq data=EMWS1.Boost_VariableSet noprint;
+14717  table ROLE*LEVEL/out=WORK.BoostMETA;
+14718  run;
+
+NOTE: There were 13 observations read from the data set EMWS1.BOOST_VARIABLESET.
+NOTE: The data set WORK.BOOSTMETA has 6 observations and 4 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+14719  proc print data=WORK.BoostMETA label noobs;
+14720  var ROLE LEVEL COUNT;
+14721  label ROLE = "%sysfunc(sasmsg(sashelp.dmine, meta_role_vlabel, NOQUOTE))" LEVEL = "%sysfunc(sasmsg(sashelp.dmine, meta_level_vlabel, NOQUOTE))" COUNT = "%sysfunc(sasmsg(sashelp.dmine, rpt_count_vlabel, NOQUOTE))";
+14722  title9 ' ';
+14723  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_varSummary_title  , NOQUOTE))";
+14724  run;
+
+NOTE: There were 6 observations read from the data set WORK.BOOSTMETA.
+NOTE: The PROCEDURE PRINT printed page 1.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+14725  title10;
+
+14726  %let EMNORLEN = %DMNORLEN;
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN 
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN EMWS1 Part_TRAIN 
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN 
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN EMWS1 Part_TRAIN 
+>>>>>>>>>>>>>> TARGET(   USE='Y' 
+                         REPORT='N' 
+                         NAME='Churn' 
+                         ROLE='TARGET' 
+                         LEVEL='INTERVAL' 
+                         ORDER='' 
+                         CREATOR='' 
+                         FORMATTYPE='QUANTITY' 
+                         FAMILY='' 
+                         LOWERLIMIT=. 
+                         UPPERLIMIT=. 
+                         DISTRIBUTION='' 
+                         COMMENT='' 
+                         PRICE=. 
+                         TYPE='N' 
+                         LABEL='' 
+                         FORMAT='BEST12.0' 
+                         INFORMAT='BEST32.0' 
+                         INDEX='N' 
+                         INDEXTYPE='NONE' 
+                         LENGTH=8 
+                      )[11265] 
+PERFORMANCE  DETAILS
+WORK.EM_DMDB WORK.EM_DMDB 
+WORK.EM_DMDB WORK.EM_DMDB WORK EM_DMDB 
+"No decisions defined for target "Churn"." 
+14787  proc print data = EMWS1.Boost_Churn_DM noobs label;
+14788  var _type_ variable label;
+14789  where _type_ ^in('MATRIX', 'DECISION', 'TRAINPRIOR', 'DATAPRIOR', 'DECPRIOR');
+14790  label _TYPE_ = "%sysfunc(sasmsg(sashelp.dmine, rpt_type_vlabel,     NOQUOTE))" VARIABLE = "%sysfunc(sasmsg(sashelp.dmine, rpt_variable_vlabel, NOQUOTE))" LABEL = "%sysfunc(sasmsg(sashelp.dmine, meta_label_vlabel, NOQUOTE))";
+14791  title9 ' ';
+14792  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_predDecVars_title  , NOQUOTE))";
+14793  run;
+
+NOTE: There were 3 observations read from the data set EMWS1.BOOST_CHURN_DM.
+      WHERE _type_ not in ('DATAPRIOR', 'DECISION', 'DECPRIOR', 'MATRIX', 'TRAINPRIOR');
+NOTE: The PROCEDURE PRINT printed page 2.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+14794  title10;
+
+14795  %let EMEXCEPTIONSTRING=;
+15223  *------------------------------------------------------------*;
+15224  * Boost: Generation of macros and macro variables;
+15225  * To see the code generated, set the EM_DEBUG macro variable to SOURCE or _ALL_;
+15226  *------------------------------------------------------------*;
+
+15227  %let EMEXCEPTIONSTRING=;
+15228  *------------------------------------------------------------*;
+15229  * TRAIN: Boost;
+15230  *------------------------------------------------------------*;
+15231  %let EM_ACTION = TRAIN;
+15232  %let syscc = 0;
+15233  %macro main;
+15234  
+15235    filename temp catalog 'sashelp.emmodl.boost_macros.source';
+15236    %include temp;
+15237    filename temp;
+15238  
+15239    %setProperties;
+15240  
+15241    %if %upcase(&EM_ACTION) = CREATE %then %do;
+15242      filename temp catalog 'sashelp.emmodl.boost_create.source';
+15243      %include temp;
+15244      filename temp;
+15245  
+15246      %create;
+15247    %end;
+15248  
+15249     %else
+15250     %if %upcase(&EM_ACTION) = TRAIN %then %do;
+15251  
+15252         filename temp catalog 'sashelp.emmodl.boost_train.source';
+15253         %include temp;
+15254         filename temp;
+15255         %train;
+15256     %end;
+15257  
+15258    %else
+15259    %if %upcase(&EM_ACTION) = SCORE %then %do;
+15260      filename temp catalog 'sashelp.emmodl.boost_score.source';
+15261      %include temp;
+15262      filename temp;
+15263  
+15264      %score;
+15265  
+15266    %end;
+15267  
+15268    %else
+15269    %if %upcase(&EM_ACTION) = REPORT %then %do;
+15270  
+15271         filename temp catalog 'sashelp.emmodl.boost_report.source';
+15272         %include temp;
+15273         filename temp;
+15274  
+15275         %report;
+15276     %end;
+15277  
+15278     %doendm:
+15279  %mend main;
+15280  
+15281  %main;
+NOTE: %INCLUDE (level 1) file TEMP is file SASHELP.EMMODL.BOOST_MACROS.SOURCE.
+15282 +
+15283 +%macro SetProperties;
+15284 +
+15285 +     /* boost options */
+15286 +     %em_checkmacro(name=EM_PROPERTY_ITERATIONS,   value=50, global=Y);
+15287 +     %em_checkmacro(name=EM_PROPERTY_TRAINPROPORTION,   value=60, global=Y);
+15288 +     %em_checkmacro(name=EM_PROPERTY_CATEGORICALBINS, value=30, global=Y);
+15289 +     %em_checkmacro(name=EM_PROPERTY_INTERVALBINS, value=100, global=Y);
+15290 +     %em_checkmacro(name=EM_PROPERTY_HUBER, value=NO, global=Y);
+15291 +     %em_checkmacro(name=EM_PROPERTY_SEED,   value=12345, global=Y);
+15292 +     %em_checkmacro(name=EM_PROPERTY_SHRINKAGE,   value=0.1, global=Y);
+15293 +     %em_checkmacro(name=EM_PROPERTY_LEAFFRACTION,   value=0.1, global=Y);
+15294 +     %em_checkmacro(name=EM_PROPERTY_SPLITSIZE,   value=., global=Y);
+15295 +     %em_checkmacro(name=EM_PROPERTY_NODESIZE,   value=20000, global=Y);
+15296 +     %em_checkmacro(name=EM_PROPERTY_SUBSERIES,   value=BEST, global=Y);
+15297 +     %em_checkmacro(name=EM_PROPERTY_ITERATIONNUM,   value=1, global=Y);
+15298 +
+15299 +     %em_checkmacro(name=EM_PROPERTY_PRECISION,    value=0, global=Y);
+15300 +     %em_checkmacro(name=EM_PROPERTY_MISSING,      value=USEINSEARCH, global=Y);
+15301 +     %em_checkmacro(name=EM_PROPERTY_MINCATSIZE, value=5, global=Y);
+15302 +     %em_checkmacro(name=EM_PROPERTY_MAXBRANCH,  value=2, global=Y);
+15303 +     %em_checkmacro(name=EM_PROPERTY_MAXDEPTH,   value=2, global=Y);
+15304 +     %em_checkmacro(name=EM_PROPERTY_REUSEVAR,   value=1, global=Y);
+15305 +     %em_checkmacro(name=EM_PROPERTY_EXHAUSTIVE,   value=5000, global=Y);
+15306 +     %em_checkmacro(name=EM_PROPERTY_PERFORMANCE,   value=DISK, global=Y);
+15307 +
+15308 +     %em_checkmacro(name=EM_PROPERTY_ASSESSMEASURE, value=PROFIT, global=Y);
+15309 +     %em_checkmacro(name=EM_PROPERTY_MEASURE, value=PROFIT, global=Y);
+15310 +     %em_checkmacro(name=EM_PROPERTY_NSURRS, value=0, global=Y);
+15311 +     %em_checkmacro(name=EM_PROPERTY_VARSELECTION, value=Y, global=Y);
+15312 +
+15313 +     %em_checkmacro(name=EM_PROPERTY_OBSIMPORTANCE, value=N, global=Y);
+15314 +     %em_checkmacro(name=EM_PROPERTY_NUMSINGLEIMP, value=5, global=Y);
+15315 +     %em_checkmacro(name=EM_PROPERTY_NUMPAIRIMP, value=0, global=Y);
+15316 +
+15317 +%mend SetProperties;
+15318 +
+15319 +
+NOTE: %INCLUDE (level 1) ending.
+NOTE: Fileref TEMP has been deassigned.
+NOTE: %INCLUDE (level 1) file TEMP is file SASHELP.EMMODL.BOOST_TRAIN.SOURCE.
+15321 +%macro train;
+15323 +   filename temp catalog 'sashelp.emmodl.boost_trainmacros.source';
+15324 +   %include temp;
+15325 +   filename temp;
+15327 +   %if &EM_IMPORT_DATA eq %then %do;
+15328 +       %let EMEXCEPTIONSTRING = exception.server.IMPORT.NOTRAIN,1;
+15329 +       %put &em_codebar;
+15330 +       %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_nodeTrainRawData_note, NOQUOTE));
+15331 +       %put &errormsg;
+15332 +       %put &em_codebar;
+15333 +       %goto doendm;
+15334 +   %end;
+15335 +   %else
+15336 +       %let EMEXCEPTIONSTRING =;
+15338 +   %if  &EM_NUM_TARGET ne 1 %then %do;
+15339 +        %let EMEXCEPTIONSTRING = exception.server.USE1TARGET;
+15340 +        %put &em_codebar;
+15341 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, metadata.use01target_err, NOQUOTE));
+15342 +        %put &errormsg;
+15343 +        %put &em_codebar;
+15344 +        %goto doendm;
+15345 +   %end;
+15347 +   %let target_level = %EM_TARGET_LEVEL;
+15348 +   %let target_var = %EM_TARGET;
+15350 +   %if ("&target_Level" ne "INTERVAL") %then %do;
+15351 +       %em_boost_makeDMDB(indata=&EM_IMPORT_DATA, target=&target_Var,
+15352 +                             nLevel=_nTargetLevel);
+15353 +   %end;
+15355 +   /* check actual num of target levels */
+15356 +   %if (&target_Level eq BINARY) %then %do;
+15357 +      %if &_nTargetLevel  > 2 %then %do;
+15358 +        %let EMEXCEPTIONSTRING = exception.server.METADATA.WRONGTARGETLEVEL,&target_Var;
+15359 +        %put &em_codebar;
+15360 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, metadata.wrongtargetlevel, NOQUOTE));
+15361 +        %put &errormsg;
+15362 +        %put &em_codebar;
+15363 +        %goto doendm;
+15364 +      %end;
+15365 +   %end;
+15367 +   %if  (&EM_NUM_INTERVAL_INPUT < 1) and (&EM_NUM_BINARY_INPUT < 1) and (&EM_NUM_ORDINAL_INPUT < 1)
+15368 +        and (&EM_NUM_NOMINAL_INPUT < 1) %then %do;
+15369 +        %let EMEXCEPTIONSTRING = exception.server.USEATLEAST1INPUTREJECT;
+15370 +        %put &em_codebar;
+15371 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_noInput_note, NOQUOTE));
+15372 +        %put &errormsg;
+15373 +        %put &em_codebar;
+15374 +        %goto doendm;
+15375 +   %end;
+15377 +   /* Initialize property macro variables */
+15378 +   %SetProperties;
+15380 +   /* data sets */
+15381 +   %EM_GETNAME(key=MODEL, type=DATA);
+15382 +   %EM_GETNAME(key=IMPORTANCE, type=DATA);
+15383 +   %EM_GETNAME(key=SUBFIT, type=DATA);
+15384 +   %EM_GETNAME(key=EMOUTFIT, type=DATA);
+15386 +   /* files
+15387 +   %EM_GETNAME(key=BINNINGCODE, type=FILE, extension=sas);*/
+15389 +   /* retrieve target information */
+15390 +   %let dsid=%sysfunc(open(&EM_DEC_DECMETA(where=(_TYPE_='TARGET'))));
+15392 +   %let vn_event =%sysfunc(varnum(&dsid, EVENT));
+15393 +   %let vn_target_type = %sysfunc(varnum(&dsid, TYPE));
+15394 +   %let vn_target_format = %sysfunc(varnum(&dsid, FORMAT));
+15395 +   %let vn_target_level  = %sysfunc(varnum(&dsid, LEVEL));
+15396 +   %do %while(^ %sysfunc(fetch(&dsid)));
+15397 +      %let temp = %nrbquote(%sysfunc(getvarc(&dsid, &vn_event)));
+15398 +      %let Target_Event = %nrbquote(%sysfunc(tranwrd(&temp, %str(%"),"")));
+15399 +      %let Target_Type =  %sysfunc(getvarc(&dsid, &vn_target_type));
+15400 +      %let Target_Format = %sysfunc(getvarc(&dsid, &vn_target_format));
+15401 +      %let Target_Level = %sysfunc(getvarc(&dsid, &vn_target_level));
+15402 +   %end;
+15403 +   %let dsid = %sysfunc(close(&dsid));
+15405 +   /* if target level is ORDINAL, throw run time exception -- proc boost does not support ordinal target */
+15406 +   %if &Target_Level eq ORDINAL %then %do;
+15407 +        %let EMEXCEPTIONSTRING = exception.server.METADATA.INVALIDORDINALTARGET;
+15408 +        %put &em_codebar;
+15409 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_invalidordinaltarget_note, NOQUOTE));
+15410 +        %put &errormsg;
+15411 +        %put &em_codebar;
+15412 +        %goto doendm;
+15413 +   %end;
+15415 +   /* if subSeries=ITERATIONS and iterationNum not specified, exception should be thrown */
+15416 +   %if ((&EM_PROPERTY_SUBSERIES eq ITERATIONS) and (&EM_PROPERTY_ITERATIONNUM eq . )) %then %do;
+15417 +        %let EMEXCEPTIONSTRING = exception.server.EMTOOL.BOOST.NOITERATIONNUM;
+15418 +        %put &em_codebar;
+15419 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_noiterationnum_note, NOQUOTE));
+15420 +        %put &errormsg;
+15421 +        %put &em_codebar;
+15422 +        %goto doendm;
+15423 +   %end;
+15425 +   %runBoostProcedure;
+15428 +   %doendm:
+15429 +%mend train;
+NOTE: %INCLUDE (level 1) ending.
+NOTE: Fileref TEMP has been deassigned.
+NOTE: %INCLUDE (level 1) file TEMP is file SASHELP.EMMODL.BOOST_TRAINMACROS.SOURCE.
+15430 +%Macro em_boost_makeDMDB(indata=, target=,  nLevel= );
+15431 +  %global &nLevel;
+15433 +  %let targetLevel=;
+15434 +  data _null_;
+15435 +     length orderString $64;
+15436 +     set &em_data_variableset end=eof;
+15437 +     where NAME="&target";
+15438 +     select(order);
+15439 +            when('')        order ='DESC';
+15440 +            when('FMTASC')  order='ASCFMT';
+15441 +            when('FMTDESC') order='DESFMT';
+15442 +            otherwise;
+15443 +     end;
+15444 +     if eof then do;
+15445 +        call symput("targetOrder", trim(order));
+15446 +        call symput("targetLevel", trim(Level));
+15447 +     end;
+15448 +  run;
+15450 +  %if "&targetLevel" ne "INTERVAL" %then %do;
+15451 +  proc dmdb batch data=&indata dmdbCat=_BoostDMDB
+15452 +    classout=_tmp_dmdbout;
+15453 +    class &target(&targetOrder);
+15454 +    target &target;
+15455 +  run;
+15456 +  data _tmp_dmdbout;
+15457 +    set _tmp_dmdbout;
+15458 +    if strip(TYPE) = 'N' and  strip(LEVEL) = '.' then delete;
+15459 +    if strip(TYPE) = 'C' and  strip(LEVEL) = '' then delete;
+15460 +  run;
+15461 +  data _null_;
+15462 +    %let dsid = %sysfunc(open(work._tmp_dmdbout));
+15463 +    %let _obs = %sysfunc(attrn(&dsid, NOBS));
+15464 +    %let dsid = %sysfunc(close(&dsid));
+15465 +     call symput("&nLevel", put(&_obs, Best12.));
+15466 +  run;
+15468 +  proc datasets lib=work nolist;
+15469 +     delete _tmp_dmdbout;
+15470 +  run;
+15471 +  quit;
+15472 +  %end;
+15474 +%Mend em_boost_makeDMDB;
+15476 +%macro runBoostProcedure;
+15478 +  proc sql;
+15479 +    reset noprint;
+15480 +    select count(*) into :nobs from &EM_IMPORT_DATA;
+15481 +  quit;
+15483 +  %let arborkluge= "work._BoostDMDB";
+15484 +  proc arbor proc=treeboost data=&EM_IMPORT_DATA
+15486 +    %if &EM_PROPERTY_ITERATIONS ne %then %do;
+15487 +      iterations = &EM_PROPERTY_ITERATIONS
+15488 +    %end;
+15490 +    %if &EM_PROPERTY_TRAINPROPORTION ne %then %do;
+15491 +       %let tprop = %sysevalf(&EM_PROPERTY_TRAINPROPORTION / 100);
+15492 +       trainproportion = &tprop
+15493 +    %end;
+15495 +    %if &EM_PROPERTY_SEED ne %then %do;
+15496 +       seed = &EM_PROPERTY_SEED
+15497 +    %end;
+15499 +    %if &EM_PROPERTY_SHRINKAGE ne %then %do;
+15500 +       shrinkage = &EM_PROPERTY_SHRINKAGE
+15501 +    %end;
+15503 +    %if &EM_PROPERTY_LEAFFRACTION ne %then %do;
+15504 +      leaffraction = &EM_PROPERTY_LEAFFRACTION
+15505 +    %end;
+15507 +    %let splitsize = &EM_PROPERTY_SPLITSIZE;
+15508 +    %if &splitsize ge &nobs %then %do;
+15509 +       %let splitsize= .;
+15510 +    %end;
+15511 +    %if &splitsize ne . %then %do;
+15512 +      splitsize = &splitsize
+15513 +    %end;
+15515 +    %if &EM_PROPERTY_MINCATSIZE ne %then %do;
+15516 +      mincatsize = &EM_PROPERTY_MINCATSIZE
+15517 +    %end;
+15519 +    %if &EM_PROPERTY_MAXBRANCH ne %then %do;
+15520 +       maxbranch = &EM_PROPERTY_MAXBRANCH
+15521 +    %end;
+15523 +    %if &EM_PROPERTY_MAXDEPTH ne %then %do;
+15524 +       maxdepth = &EM_PROPERTY_MAXDEPTH
+15525 +    %end;
+15527 +    %let nsurrs = ;
+15528 +    %if &EM_PROPERTY_NSURRS ne %then %do;
+15529 +      %let numInputs = %sysevalf(&EM_NUM_BINARY_INPUT + &EM_NUM_ORDINAL_INPUT + &EM_NUM_INTERVAL_INPUT + &EM_NUM_NOMINAL_INPUT);
+15530 +      %let nsurrs = %sysevalf(%sysfunc(min(&EM_PROPERTY_NSURRS, (&numInputs -1 ))));
+15531 +      maxsurrs = &nsurrs
+15532 +    %end;
+15534 +    %if &EM_PROPERTY_MISSING ne %then %do;
+15535 +      Missing = &EM_PROPERTY_MISSING
+15536 +    %end;
+15538 +    %if &EM_PROPERTY_REUSEVAR ne %then %do;
+15539 +      reusevar = &EM_PROPERTY_REUSEVAR
+15540 +    %end;
+15541 +/*
+15542 +    %if &EM_PROPERTY_PRECISION ne %then %do;
+15543 +      intervaldecimals=&EM_PROPERTY_PRECISION
+15544 +    %end;
+15545 +*/
+15546 +    %if &EM_PROPERTY_EXHAUSTIVE ne %then %do;
+15547 +      Exhaustive = &EM_PROPERTY_EXHAUSTIVE
+15548 +    %end;
+15550 +    %if &Target_Event ne %then %do;
+15551 +      Event="&Target_Event"
+15552 +    %end;
+15554 +    %if &EM_PROPERTY_CATEGORICALBINS ne %then %do;
+15555 +      CategoricalBins = &EM_PROPERTY_CATEGORICALBINS
+15556 +    %end;
+15558 +    %if &EM_PROPERTY_INTERVALBINS ne %then %do;
+15559 +      IntervalBins = &EM_PROPERTY_INTERVALBINS
+15560 +    %end;
+15562 +    %if &TARGET_LEVEL eq INTERVAL %then %do;
+15563 +      %if &EM_PROPERTY_HUBER ne %then %do;
+15564 +        Huber=&EM_PROPERTY_HUBER
+15565 +      %end;
+15566 +    %end;
+15567 +    ;
+15569 +    %if %EM_INTERVAL_INPUT %EM_INTERVAL_REJECTED ne %then %do;
+15570 +      input %EM_INTERVAL_INPUT %EM_INTERVAL_REJECTED/ level = interval;
+15571 +    %end;
+15573 +    %if %EM_BINARY_INPUT %EM_NOMINAL_INPUT %EM_BINARY_REJECTED %EM_NOMINAL_REJECTED ne  %then %do;
+15574 +      input %EM_BINARY_INPUT %EM_BINARY_REJECTED %EM_NOMINAL_INPUT %EM_NOMINAL_REJECTED / level = nominal;
+15575 +    %end;
+15577 +    %if %EM_ORDINAL_INPUT %EM_ORDINAL_REJECTED ne %then %do;
+15578 +      input %EM_ORDINAL_INPUT %EM_ORDINAL_REJECTED/ level = ordinal;
+15579 +    %end;
+15581 +    %if %EM_FREQ ne %then %do;
+15582 +       freq %EM_FREQ;
+15583 +    %end;
+15585 +    target %EM_TARGET / level = &TARGET_LEVEL;
+15587 +    &EM_DEC_STATEMENT;
+15589 +    %if &EM_PROPERTY_PERFORMANCE ne %then %do;
+15590 +      performance  workdatalocation = &EM_PROPERTY_PERFORMANCE
+15591 +    %end;
+15592 +    %if &EM_PROPERTY_NODESIZE ne %then %do;
+15593 +       nodesize = &EM_PROPERTY_NODESIZE
+15594 +    %end;
+15595 +    ;
+15596 +    save model=&EM_USER_MODEL;
+15597 +  run;
+15598 +  quit;
+15599 +  %em_checkerror();
+15601 +%mend runBoostProcedure;
+NOTE: %INCLUDE (level 1) ending.
+NOTE: Fileref TEMP has been deassigned.
+WARNING: Argument 2 to function GETVARC referenced by the %SYSFUNC or %QSYSFUNC macro function is out of range.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: 1653839 kilobytes of physical memory.
+NOTE: Will use 108 out of 108 training cases.
+NOTE: Using memory pool with 54480896 bytes.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Will not search for split on variable Occuptation.
+NOTE: Acceptable cases have the same value.
+NOTE: Option MINCATSIZE=5 may apply.
+NOTE: Passed training data 250 times.
+NOTE: Current TREEBOOST model contains 50 trees.
+NOTE: Training used 30920 bytes of work memory.
+NOTE: The data set EMWS1.BOOST_MODEL has 6193 observations and 4 variables.
+
+
+NOTE: There were 108 observations read from the data set EMWS1.PART_TRAIN.
+NOTE: PROCEDURE ARBOR used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+15604  %let SYSCC = 0;
+NOTE: PROCEDURE DISPLAY used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+15605  *------------------------------------------------------------*;
+15606  * End TRAIN: Boost;
+15607  *------------------------------------------------------------*;
+15608  
+
+15609  *------------------------------------------------------------*;
+15610  * Close any missing semi colons;
+15611  *------------------------------------------------------------*;
+15612  ;
+15613  ;
+15614  ;
+15615  ;
+15616  quit;
+15617  *------------------------------------------------------------*;
+15618  * Close any unbalanced quotes;
+15619  *------------------------------------------------------------*;
+15620  /*; *"; *'; */
+15621  ;
+15622  run;
+15623  quit;
+15624  /* Reset EM Options */
+15625  options formchar="|----|+|---+=|-/\<>*";
+15626  options nocenter ls=256 ps=10000;
+15627  goptions reset=all device=GIF NODISPLAY;
+

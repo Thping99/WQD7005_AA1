@@ -1,0 +1,36 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Summary Statistics for Interval Targets
+
+Data=DATA
+
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+
+ Churn                 1           0.205               0             200       0       0.4047146771         
+
+
+Data=TEST
+
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+
+ Churn                 1    0.2826086957               0              46       0       0.4552432062         
+
+
+Data=TRAIN
+
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+
+ Churn                 1    0.1944444444               0             108       0       0.3976175153         
+
+
+Data=VALIDATE
+
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+
+ Churn                 1     0.152173913               0              46       0       0.3631584475         

@@ -1,0 +1,711 @@
+*------------------------------------------------------------*
+* Training Log
+Date:                January 07, 2024
+Time:                02:08:48
+*------------------------------------------------------------*
+14716  proc freq data=EMWS1.HPDMForest_VariableSet noprint;
+14717  table ROLE*LEVEL/out=WORK.HPDMForestMETA;
+14718  run;
+
+NOTE: There were 13 observations read from the data set EMWS1.HPDMFOREST_VARIABLESET.
+NOTE: The data set WORK.HPDMFORESTMETA has 6 observations and 4 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+14719  proc print data=WORK.HPDMForestMETA label noobs;
+14720  var ROLE LEVEL COUNT;
+14721  label ROLE = "%sysfunc(sasmsg(sashelp.dmine, meta_role_vlabel, NOQUOTE))" LEVEL = "%sysfunc(sasmsg(sashelp.dmine, meta_level_vlabel, NOQUOTE))" COUNT = "%sysfunc(sasmsg(sashelp.dmine, rpt_count_vlabel, NOQUOTE))";
+14722  title9 ' ';
+14723  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_varSummary_title  , NOQUOTE))";
+14724  run;
+
+NOTE: There were 6 observations read from the data set WORK.HPDMFORESTMETA.
+NOTE: The PROCEDURE PRINT printed page 1.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+14725  title10;
+
+14726  %let EMNORLEN = %DMNORLEN;
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN 
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN EMWS1 Part_TRAIN 
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN 
+EMWS1.Part_TRAIN EMWS1.Part_TRAIN EMWS1 Part_TRAIN 
+>>>>>>>>>>>>>> TARGET(   USE='Y' 
+                         REPORT='N' 
+                         NAME='Churn' 
+                         ROLE='TARGET' 
+                         LEVEL='INTERVAL' 
+                         ORDER='' 
+                         CREATOR='' 
+                         FORMATTYPE='QUANTITY' 
+                         FAMILY='' 
+                         LOWERLIMIT=. 
+                         UPPERLIMIT=. 
+                         DISTRIBUTION='' 
+                         COMMENT='' 
+                         PRICE=. 
+                         TYPE='N' 
+                         LABEL='' 
+                         FORMAT='BEST12.0' 
+                         INFORMAT='BEST32.0' 
+                         INDEX='N' 
+                         INDEXTYPE='NONE' 
+                         LENGTH=8 
+                      )[11267] 
+PERFORMANCE  DETAILS
+WORK.EM_DMDB WORK.EM_DMDB 
+WORK.EM_DMDB WORK.EM_DMDB WORK EM_DMDB 
+"No decisions defined for target "Churn"." 
+14787  proc print data = EMWS1.HPDMForest_Churn_DM noobs label;
+14788  var _type_ variable label;
+14789  where _type_ ^in('MATRIX', 'DECISION', 'TRAINPRIOR', 'DATAPRIOR', 'DECPRIOR');
+14790  label _TYPE_ = "%sysfunc(sasmsg(sashelp.dmine, rpt_type_vlabel,     NOQUOTE))" VARIABLE = "%sysfunc(sasmsg(sashelp.dmine, rpt_variable_vlabel, NOQUOTE))" LABEL = "%sysfunc(sasmsg(sashelp.dmine, meta_label_vlabel, NOQUOTE))";
+14791  title9 ' ';
+14792  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_predDecVars_title  , NOQUOTE))";
+14793  run;
+
+NOTE: There were 3 observations read from the data set EMWS1.HPDMFOREST_CHURN_DM.
+      WHERE _type_ not in ('DATAPRIOR', 'DECISION', 'DECPRIOR', 'MATRIX', 'TRAINPRIOR');
+NOTE: The PROCEDURE PRINT printed page 2.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+14794  title10;
+
+14795  %let EMEXCEPTIONSTRING=;
+15211  *------------------------------------------------------------*;
+15212  * HPDMForest: Generation of macros and macro variables;
+15213  * To see the code generated, set the EM_DEBUG macro variable to SOURCE or _ALL_;
+15214  *------------------------------------------------------------*;
+
+15215  %let EMEXCEPTIONSTRING=;
+15216  *------------------------------------------------------------*;
+15217  * TRAIN: HPDMForest;
+15218  *------------------------------------------------------------*;
+15219  %let EM_ACTION = TRAIN;
+15220  %let syscc = 0;
+15221  %macro main;
+15222  
+15223     %if %upcase(&EM_ACTION) = CREATE %then %do;
+15224         filename temp catalog 'sashelp.hpdm.hpdmforest_create.source';
+15225         %include temp;
+15226         filename temp;
+15227         %hpdm_Forest_create;
+15228     %end;
+15229     %else
+15230     %if %upcase(&EM_ACTION) = TRAIN %then %do;
+15231         filename temp catalog 'sashelp.hpdm.hpdmforest_train.source';
+15232         %include temp;
+15233         filename temp;
+15234         %hpdm_Forest_train;
+15235     %end;
+15236     %else
+15237     %if %upcase(&EM_ACTION) = SCORE %then %do;
+15238         filename temp catalog 'sashelp.hpdm.hpdmforest_score.source';
+15239         %include temp;
+15240         filename temp;
+15241         %hpdm_Forest_score;
+15242     %end;
+15243     %else
+15244     %if %upcase(&EM_ACTION) = REPORT %then %do;
+15245         filename temp catalog 'sashelp.hpdm.hpdmforest_report.source';
+15246         %include temp;
+15247         filename temp;
+15248         %hpdm_Forest_report;
+15249     %end;
+15250     %else
+15251  
+15252  %mend main;
+15253  
+15254  %main;
+NOTE: %INCLUDE (level 1) file TEMP is file SASHELP.HPDM.HPDMFOREST_TRAIN.SOURCE.
+15255 +%Macro hpdm_Forest_Train;
+15257 +   /* retrieve data to model based on presence of grid processing */
+15258 +   %em_getname(key=HPDS2SCORE, type=FILE, extension=sas);
+15259 +   %hpdm_dataprep(data=, out=, metadata=, code=, ROLE=TRAIN, where=,
+15260 +        outDS2Code=&em_user_HPDS2SCORE, append=N, host=, nodes=, nthreads=, details=);
+15262 +   /* check for the existence of EM_HPDM_TRAIN table */
+15263 +   %if &EM_HPDM_TRAIN eq  %then %do;
+15264 +       %let EMEXCEPTIONSTRING = exception.server.IMPORT.NOTRAIN,1;
+15265 +       %put &em_codebar;
+15266 +       %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_nodeTrainRawData_note, NOQUOTE));
+15267 +       %put &errormsg;
+15268 +       %put &em_codebar;
+15269 +       %goto doendm;
+15270 +   %end;
+15271 +   %else
+15272 +       %let EMEXCEPTIONSTRING =;
+15274 +   %if ^%sysfunc(exist(&EM_HPDM_TRAIN)) AND ^%sysfunc(exist(&EM_HPDM_TRAIN, VIEW)) %then %do;
+15275 +       %let EMEXCEPTIONSTRING = exception.server.IMPORT.NOTRAIN,1;
+15276 +       %put &em_codebar;
+15277 +       %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_nodeTrainRawData_note, NOQUOTE));
+15278 +       %put &errormsg;
+15279 +       %put &em_codebar;
+15280 +       %goto doendm;
+15281 +   %end;
+15282 +   %else
+15283 +       %let EMEXCEPTIONSTRING =;
+15286 +   /* Check for the existence of one target variable*/
+15287 +   %if  &EM_NUM_TARGET ne 1 %then %do;
+15288 +        %let EMEXCEPTIONSTRING = exception.server.USE1TARGET;
+15289 +        %put &em_codebar;
+15290 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, metadata.use01target_err, NOQUOTE));
+15291 +        %put &errormsg;
+15292 +        %put &em_codebar;
+15293 +        %goto doendm;
+15294 +   %end;
+15295 +   %else
+15296 +       %let EMEXCEPTIONSTRING =;
+15298 +   /* Check target measurement level and throw exception if ordinal target is detected */
+15299 +   %if %EM_TARGET_LEVEL eq ORDINAL %then %do;
+15300 +        %let EMEXCEPTIONSTRING = exception.server.METADATA.INVALIDORDINALTARGET;
+15301 +        %put &em_codebar;
+15302 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, ordinaltargetpresent_note, NOQUOTE));
+15303 +        %put &errormsg;
+15304 +        %put &em_codebar;
+15305 +        %goto doendm;
+15306 +   %end;
+15307 +   %else
+15308 +       %let EMEXCEPTIONSTRING =;
+15310 +   /* Check for the existence of one input variable*/
+15311 +   %if  (&EM_NUM_INTERVAL_INPUT < 1) and (&EM_NUM_BINARY_INPUT < 1) and (&EM_NUM_ORDINAL_INPUT < 1)
+15312 +        and (&EM_NUM_NOMINAL_INPUT < 1) and (&EM_NUM_INTERVAL_REJECTED < 1) and (&EM_NUM_BINARY_REJECTED < 1)
+15313 +         and (&EM_NUM_ORDINAL_REJECTED < 1) and (&EM_NUM_NOMINAL_REJECTED < 1)%then %do;
+15314 +        %let EMEXCEPTIONSTRING = exception.server.USEATLEAST1INPUTREJECT;
+15315 +        %put &em_codebar;
+15316 +        %let errormsg = %sysfunc(sasmsg(sashelp.dmine, error_noInput_note, NOQUOTE));
+15317 +        %put &errormsg;
+15318 +        %put &em_codebar;
+15319 +        %goto doendm;
+15320 +   %end;
+15321 +   %else
+15322 +       %let EMEXCEPTIONSTRING =;
+15324 +   /* data sets */
+15325 +   %EM_GETNAME(KEY=ITERATION, type=DATA);
+15326 +   %EM_GETNAME(KEY=VARIMPORT, type=DATA);
+15327 +   %EM_GETNAME(KEY=BASELINE, type=DATA);
+15329 +   %let out=;
+15330 +   %if "&em_hpdm_train" ne "&em_import_data" %then %do;
+15331 +      %let out = &em_hpdm_train_score;
+15332 +   %end;
+15334 +   %let traindata = &EM_HPDM_TRAIN;
+15335 +   %if "&em_hpdm_train" eq "&em_import_data" %then %do;
+15336 +      /* check if a training and validate table are passed in as 2 seperate tables; if so, */
+15337 +      /* create one table containing the _partind_ variable to be used for modelling       */
+15338 +      %if (%sysfunc(exist(&em_import_data)) or %sysfunc(exist(&em_import_data, VIEW))) and
+15339 +          ("&EM_IMPORT_VALIDATE" ne "") and (%sysfunc(exist(&em_import_validate)) or %sysfunc(exist(&em_import_validate, VIEW))) %then %do;
+15340 +             %let traindata = &EM_NODEID._traindata;
+15341 +             data &traindata  / view=&traindata;
+15342 +                set &em_import_data(in=_a) &em_import_validate(in=_b);
+15343 +                if _a then _PartInd_ = 1;
+15344 +                else _PartInd_=0;
+15345 +             run;
+15346 +      %end;
+15347 +   %end;
+15349 +    * retrieve the ordering of the target variable from DECMETA;
+15350 +    * and use it to determine the event level for non-interval target;
+15351 +   %if %EM_TARGET_LEVEL ne INTERVAL %then %do;
+15352 +       proc sql noprint;
+15353 +           select order into :_target_order from &EM_DEC_DECMETA
+15354 +               where upcase(variable) eq "%upcase(%EM_TARGET)";
+15355 +       quit;
+15356 +   %end;
+15357 +   %else %let _target_order =;
+15359 +   /* load hpforest macros */
+15360 +   filename temp catalog 'sashelp.hpdm.hpdmforest_macros.source';
+15361 +   %include temp;
+15362 +   filename temp;
+15364 +    /* run HPForest model */
+15365 +    %HPDM_HPForest(indata=&traindata,
+15366 +           target = %EM_TARGET,
+15367 +           targetOrder = &_target_order,
+15368 +           alpha=&EM_PROPERTY_ALPHA,
+15369 +           catbins=&EM_PROPERTY_CATBINS,
+15370 +           exhaustive=&EM_PROPERTY_EXHAUSTIVE,
+15371 +           leafsizemethod=&EM_PROPERTY_LEAFSIZEMETHOD,
+15372 +           leaffraction=&EM_PROPERTY_LEAFFRACTION,
+15373 +           leafsize=&EM_PROPERTY_LEAFSIZE,
+15374 +           maxdepth=&EM_PROPERTY_MAXDEPTH,
+15375 +           maxtrees=&EM_PROPERTY_MAXTREES,
+15376 +           mincatsize=&EM_PROPERTY_MINCATSIZE,
+15377 +           seed=&EM_PROPERTY_SEED,
+15378 +           splitsize=&EM_PROPERTY_SPLITSIZE,
+15379 +           numobsmethod=&EM_PROPERTY_NUMOBSMETHOD,
+15380 +           trainfraction=&EM_PROPERTY_TRAINFRACTION,
+15381 +           trainn=&EM_PROPERTY_TRAINN,
+15382 +           vars_to_try=&EM_PROPERTY_VARS_TO_TRY,
+15383 +           missing=&EM_PROPERTY_MISSING,
+15384 +           minuseinsearch=&EM_PROPERTY_MINUSEINSEARCH,
+15385 +           %if &out ne "" %then %do;
+15386 +             out=&out,
+15387 +           %end;
+15388 +           outbase=&EM_USER_BASELINE,
+15389 +           outiter=&EM_USER_ITERATION,
+15390 +           outimport=&EM_USER_VARIMPORT
+15391 +           );
+15393 +   /* delete temporary traindata is training and validate are both passed into the node */
+15394 +    %if "&traindata" ne "&em_hpdm_train" %then %do;
+15395 +      proc datasets lib=work nolist;
+15396 +        delete &traindata /mt=view;
+15397 +      run;
+15398 +    %end;
+15400 +    /* create flow and publish score code */
+15401 +    filename flowref "&EM_FILE_EMFLOWSCORECODE";
+15402 +    filename pubref "&EM_FILE_EMPUBLISHSCORECODE";
+15404 +    %em_getname(key=OUTMDLFILE, type=FILE, extension=bin);
+15406 +    /* add decision and residual score code; create classification tables and fit statistics on the model */
+15407 +    %em_model(DATA=, TARGET=&EM_DEC_TARGET, DECSCORECODE=Y, CLASSIFICATION=Y, FITSTATISTICS=Y, RESIDUALS=Y);
+15409 +    %global hpfst_score_input hpfst_score_output;
+15410 +    %let hpfst_score_input = &em_score_output;
+15411 +    %let hpfst_score_output = &em_score_output;
+15413 +    data _null_;
+15414 +      file flowref;
+15415 +      set &EM_DATA_VARIABLESET(where=((ROLE='INPUT' and USE in('Y', 'D')) or ROLE='REJECTED' and USE='Y')) end=eof;
+15417 +      if _n_=1 then do;
+15418 +        put '%macro em_hpfst_score;';
+15419 +        put ' ';
+15421 +        put '  %if %sysfunc(exist(work._score_temp)) %then %do;';
+15422 +        put '     proc delete data=work._score_temp;';
+15423 +        put '     run;';
+15424 +        put '  %end;';
+15426 +        put ' ';
+15427 +        put '  %if %symexist(hpfst_score_input)=0 %then %let hpfst_score_input=&em_score_output;';
+15428 +        put '  %if %symexist(hpfst_score_output)=0 %then %let hpfst_score_output=&em_score_output;';
+15429 +        put ' ';
+15430 +        put '%let hpvvn= %sysfunc(getoption(VALIDVARNAME));';
+15431 +        put 'options validvarname=V7;';
+15433 +        put '  proc hp4score data=&hpfst_score_input(keep=';
+15434 +      end;
+15436 +      /* only keeps variables used as input */
+15437 +      put NAME;
+15439 +      if eof then do;
+15440 +        put " %EM_KEY ); ";
+15442 +        %if &EM_NUM_KEY  %then %do;
+15443 +          put "  ID %EM_KEY ;";
+15444 +        %end;
+15445 +        put '  %if %symexist(EM_USER_OUTMDLFILE)=0 %then %do;';
+15446 +        put '    score file="' @;
+15447 +        put "&EM_USER_OUTMDLFILE" @;
+15448 +        put '" out=work._outtemp;';
+15449 +        put '  %end;';
+15450 +        put '  %else %do;';
+15451 +        put '    score file="&EM_USER_OUTMDLFILE" out=work._outtemp;';
+15452 +        put '  %end;';
+15453 +        %if %length(&hpdm_performance)=0 %then %let hpdm_performance = PERFORMANCE;
+15454 +        put "    &hpdm_performance nthreads=1;";
+15455 +        put "  run;";
+15456 +        put " ";
+15457 +        put 'options validvarname=&hpvvn;';
+15458 +        put '  data work._score_temp;';
+15459 +        put '     merge &hpfst_score_input work._outtemp;';
+15460 +        put "  run;";
+15461 +        put " ";
+15462 +        put "  proc delete data=work._outtemp;";
+15463 +        put "  run;";
+15464 +        put " ";
+15465 +        put '  data &hpfst_score_output;';
+15466 +        put '    set work._score_temp;';
+15467 +        put '%mend;';
+15468 +        put ' ';
+15469 +        put '%em_hpfst_score;';
+15470 +      end;
+15471 +    run;
+15473 +    /* need to have different flow and publish code - so no writing to work and merging */
+15474 +    data _null_;
+15475 +      file pubref;
+15477 +        put '%macro em_hpfst_score;';
+15478 +        put ' ';
+15480 +        put '  %if %symexist(hpfst_score_input)=0 %then %let hpfst_score_input=&em_score_output;';
+15481 +        put '  %if %symexist(hpfst_score_output)=0 %then %let hpfst_score_output=&em_score_output;';
+15482 +        put '  %if %symexist(hpfst_id_vars)=0 %then %let hpfst_id_vars = _ALL_;';
+15483 +        put ' ';
+15484 +        put '  %let hpvvn= %sysfunc(getoption(VALIDVARNAME));';
+15485 +        put '  options validvarname=V7;';
+15487 +        put '  proc hp4score data=&hpfst_score_input;';
+15489 +        put '  id &hpfst_id_vars;';
+15491 +        put '  %if %symexist(EM_USER_OUTMDLFILE)=0 %then %do;';
+15492 +        put '    score file="' @;
+15493 +        put "&EM_USER_OUTMDLFILE" @;
+15494 +        put '" out=&hpfst_score_output;';
+15495 +        put '  %end;';
+15496 +        put '  %else %do;';
+15497 +        put '    score file="&EM_USER_OUTMDLFILE" out=&hpfst_score_output;';
+15498 +        put '  %end;';
+15499 +        put "    &hpdm_performance;";
+15500 +        put "  run;";
+15501 +        put " ";
+15502 +        put '  options validvarname=&hpvvn;';
+15503 +        put " ";
+15504 +        put '  data &hpfst_score_output;';
+15505 +        put '    set &hpfst_score_output;';
+15506 +        put '%mend;';
+15507 +        put ' ';
+15508 +        put '%em_hpfst_score;';
+15509 +    run;
+15511 +    filename pubref;
+15512 +    filename flowref;
+15514 +    %if "&out" ne "" %then %do;
+15515 +      /* Create EMHPDMSCORE to Score in a grid environment */
+15516 +      %em_getname(key=EMHPDMSCORE, type=FILE, extension=sas);
+15517 +      filename _hpdmfrf "&em_user_emhpdmscore";
+15519 +      data _null_;
+15520 +         file _hpdmfrf;
+15521 +        put '%macro em_hpfst_score;';
+15522 +        put ' ';
+15524 +        put '  %if %symexist(hpfst_score_input)=0 %then %let hpfst_score_input=&em_score_output;';
+15525 +        put '  %if %symexist(hpfst_score_output)=0 %then %let hpfst_score_output=&em_score_output;';
+15526 +        put '  %if %symexist(hpfst_id_vars)=0 %then %let hpfst_id_vars = _ALL_;';
+15527 +        put ' ';
+15528 +        put '  %let hpvvn= %sysfunc(getoption(VALIDVARNAME));';
+15529 +        put '  options validvarname=V7;';
+15531 +        put '  proc hp4score data=&hpfst_score_input;';
+15533 +        put '  id &hpfst_id_vars;';
+15535 +        put '  %if %symexist(EM_USER_OUTMDLFILE)=0 %then %do;';
+15536 +        put '    score file="' @;
+15537 +        put "&EM_USER_OUTMDLFILE" @;
+15538 +        put '" out=&hpfst_score_output;';
+15539 +        put '  %end;';
+15540 +        put '  %else %do;';
+15541 +        put '    score file="&EM_USER_OUTMDLFILE" out=&hpfst_score_output;';
+15542 +        put '  %end;';
+15543 +        put "    &hpdm_performance;";
+15544 +        put "  run;";
+15545 +        put " ";
+15546 +        put '  options validvarname=&hpvvn;';
+15547 +        put " ";
+15548 +        put '%mend;';
+15549 +        put ' ';
+15550 +        put '%em_hpfst_score;';
+15551 +      run;
+15553 +      filename _hpdmfrf;
+15555 +      %hpdm_node_assess(data=&out, DECMETA=&EM_DEC_DECMETA);
+15556 +      proc delete data=&out;
+15557 +      run;
+15559 +    %end;
+15561 +    /* Always have HPDMScore Empty not to break HPDM_DATAPREP macro */
+15562 +     %em_getname(key=HPDMSCORE, type=FILE, extension=sas);
+15563 +     filename _hpdmfrf "&em_user_hpdmscore";
+15564 +     data _null_;
+15565 +        file _hpdmfrf;
+15566 +        put ' ';
+15567 +     run;
+15568 +     filename _hpdmfrf;
+15570 +    %if &sysrc >4 %then %do;
+15571 +      %goto doendem;
+15572 +    %end;
+15574 +    %doendem:
+15576 +%Mend hpdm_Forest_Train;
+NOTE: %INCLUDE (level 1) ending.
+NOTE: Fileref TEMP has been deassigned.
+NOTE: %INCLUDE (level 1) file _HPFLOW is file SASHELP.EMUTIL.EM_PATHSCORECODE.SOURCE.
+15580 +%macro EM_PATHSCORECODE(NODEID=, STARTNODEID=, FLOW=, PUBLISH=, HPDM=, OUTPATH=);
+15581 +   proc display c=sashelp.emcore.pathscorecode.scl;
+15582 +   run;
+15583 +%mend EM_PATHSCORECODE;
+15584 +
+NOTE: %INCLUDE (level 1) ending.
+NOTE: Fileref _HPFLOW has been deassigned.
+Note: No data preparation was done because the table for this role is unavailable.
+Note: No data preparation was done because the table for this role does not exist.
+
+NOTE: DATA STEP view saved on file WORK.HPDMFOREST_TRAINDATA.
+NOTE: A stored DATA STEP view cannot run under a different operating system.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: %INCLUDE (level 1) file TEMP is file SASHELP.HPDM.HPDMFOREST_MACROS.SOURCE.
+15586 +%macro HPDM_HPFOREST(indata=,
+15587 +                   target=,
+15588 +                   targetOrder=,
+15589 +                   alpha=,
+15590 +                   catbins=,
+15591 +                   exhaustive=,
+15592 +                   leafsizemethod=,
+15593 +                   leaffraction=,
+15594 +                   leafsize=,
+15595 +                   maxdepth=,
+15596 +                   maxtrees=,
+15597 +                   mincatsize=,
+15598 +                   seed=,
+15599 +                   splitsize=,
+15600 +                   numobsmethod=,
+15601 +                   trainfraction=,
+15602 +                   trainn=,
+15603 +                   vars_to_try=,
+15604 +                   missing=,
+15605 +                   minuseinsearch=,
+15606 +                   out=,
+15607 +                   outbase=,
+15608 +                   outiter=,
+15609 +                   outimport=
+15610 +                   );
+15612 +    /* retrieve files */
+15613 +    %em_getname(key=OUTMDLFILE, type=FILE, extension=bin);
+15615 +    data _null_;
+15616 +        length foreststate foresthpstore $2000;
+15617 +        foreststate   = "&EM_NODEDIR"!!"&em_dsep"!!"score.sasast";
+15618 +        foresthpstore = "&EM_NODEDIR"!!"&em_dsep"!!"score.sas";
+15619 +        call symput('FOREST_STATE', trim(foreststate));
+15620 +        call symput('FOREST_SCORE', trim(foresthpstore));
+15621 +    run;
+15623 +    /* run the HPForest procedure */
+15624 +    proc hpforest data=&indata
+15626 +    /* HPForest arguments */
+15627 +    %if &alpha ne %then %do;
+15628 +      alpha=&alpha
+15629 +    %end;
+15630 +    %if &catbins ne %then %do;
+15631 +      catbins=&catbins
+15632 +    %end;
+15633 +    %if &exhaustive ne %then %do;
+15634 +      exhaustive=&exhaustive
+15635 +    %end;
+15636 +    %if &leafsizemethod ne DEFAULT %then %do;
+15637 +      %if ((&leafsizemethod eq PERCENTAGE) and ("&leaffraction" ne ".")) %then %do;
+15638 +        leaffraction=&leaffraction
+15639 +      %end;
+15640 +      %else %if ((&leafsizemethod eq COUNT) and ("&leafsize" ne ".")) %then %do;
+15641 +        leafsize=&leafsize
+15642 +      %end;
+15643 +    %end;
+15644 +    %if &maxdepth ne %then %do;
+15645 +      maxdepth=&maxdepth
+15646 +    %end;
+15647 +    %if &maxtrees ne %then %do;
+15648 +      maxtrees=&maxtrees
+15649 +    %end;
+15650 +    %if &mincatsize ne %then %do;
+15651 +      mincatsize=&mincatsize
+15652 +    %end;
+15653 +    %if &missing ne %then %do;
+15654 +      missing=&missing
+15655 +      %if ((&missing eq USEINSEARCH) AND (&minuseinsearch ne )) %then %do;
+15656 +         minUseInSearch=&minuseinsearch
+15657 +      %end;
+15658 +    %end;
+15659 +    %if &seed ne %then %do;
+15660 +      seed=&seed
+15661 +    %end;
+15662 +    %if ((&splitsize ne) and ("&splitsize" ne ".")) %then %do;
+15663 +      splitsize=&splitsize
+15664 +    %end;
+15665 +    %if ((&numobsmethod eq PERCENTAGE) and ("&trainfraction" ne ".")) %then %do;
+15666 +      trainfraction = &trainfraction
+15667 +    %end;
+15668 +    %else %if ((&numobsmethod eq COUNT) and ("&trainn" ne ".")) %then %do;
+15669 +       trainn = &trainn
+15670 +    %end;
+15671 +    %if ((&vars_to_try ne ) and ("&vars_to_try" ne ".")) %then %do;
+15672 +       vars_to_try=&vars_to_try
+15673 +    %end;
+15674 +    %if %symexist(EM_HPFOREST_PROCSTMNT) %then %do;
+15675 +       &EM_HPFOREST_PROCSTMNT
+15676 +    %end;
+15677 +    ;
+15679 +    /* Input Statements */
+15680 +    %if %EM_INTERVAL_INPUT %EM_INTERVAL_REJECTED ne %then %do;
+15681 +      input %EM_INTERVAL_INPUT %EM_INTERVAL_REJECTED/ level = interval;
+15682 +    %end;
+15684 +    %if %EM_BINARY_INPUT %EM_NOMINAL_INPUT %EM_BINARY_REJECTED %EM_NOMINAL_REJECTED ne  %then %do;
+15685 +      input %EM_BINARY_INPUT %EM_BINARY_REJECTED %EM_NOMINAL_INPUT %EM_NOMINAL_REJECTED / level = nominal;
+15686 +    %end;
+15688 +    %if %EM_ORDINAL_INPUT %EM_ORDINAL_REJECTED ne %then %do;
+15689 +      input %EM_ORDINAL_INPUT %EM_ORDINAL_REJECTED / level = ordinal;
+15690 +    %end;
+15692 +    /* Target Statement */
+15693 +    * for the ordering of target levels;
+15694 +    * if not ASC, FMTASC, or FMTDESC then alway use DESC;
+15695 +    %if %EM_TARGET_LEVEL ne INTERVAL %then %do;
+15696 +       %if &targetOrder eq ASC %then %let torder = %str(order = ASCENDING);
+15697 +       %else %if &targetOrder eq FMTASC %then %let torder = %str(order = ASCFORMATTED);
+15698 +       %else %if &targetOrder eq FMTDESC %then %let torder = %str(order = DESFORMATTED);
+15699 +       %else %let torder = %str(order = DESCENDING);
+15700 +    %end;
+15701 +    %else %let torder=;
+15703 +    target &Target / level = %EM_TARGET_LEVEL &torder;
+15705 +    /* ID Variables */
+15706 +    %if ("&hpdm_partitionVar" ne "") %then %do;
+15707 +        id &hpdm_partitionVar %em_key ;
+15708 +    %end;
+15709 +    %else
+15710 +    %if &EM_NUM_KEY  %then %do;
+15711 +       ID %EM_KEY ;
+15712 +    %end;
+15714 +    /* Partition variable */
+15715 +    %if ("&hpdm_partitionVar" ne "") %then %do;
+15716 +        partition rolevar=&hpdm_partitionVar(TRAIN='1' VALIDATE='0');
+15717 +    %end;
+15718 +    %else %if "&em_hpdm_train" ne "&indata" %then %do;
+15719 +       partition rolevar=_partInd_(TRAIN='1' VALIDATE='0');
+15720 +    %end;
+15722 +    /* freq variable */
+15723 +    %if %EM_FREQ ne %then %do;
+15724 +      freq %EM_FREQ;
+15725 +    %end;
+15727 +    /* output statements */
+15728 +    /*ods output nobs=&outnobs Baseline=&outbase FitStatistics=&outiter ModelInfo=&outmodelparms timing=&outtiming VariableImportance=&outimport; */
+15729 +    ods output Baseline=&outbase FitStatistics=&outiter VariableImportance=&outimport;
+15731 +    /* Score Statement*/
+15732 +    %if "&out" ne "" %then %do;
+15733 +      score out=&out
+15734 +      %if %symexist(EM_HPFOREST_SCORESTMNT) %then %do;
+15735 +        &EM_HPFOREST_SCORESTMNT
+15736 +      %end;
+15737 +      ;
+15738 +    %end;
+15740 +    /* save statement */
+15741 +    save file="&EM_USER_OUTMDLFILE"
+15742 +    %if %symexist(EM_HPFOREST_SAVESTMNT) %then %do;
+15743 +      &EM_HPFOREST_SAVESTMNT
+15744 +    %end;
+15745 +    ;
+15747 +    savestate file = "&FOREST_STATE";
+15748 +    /* Performance Statements */
+15749 +    &hpdm_performance
+15750 +      %if %symexist(EM_HPFOREST_PERFSTMNT) %then %do;
+15751 +         &EM_HPFOREST_PERFSTMNT
+15752 +      %end;
+15753 +    ;
+15754 +    run;
+15755 +    quit;
+15757 +    proc astore;
+15758 +        describe epcode="&FOREST_SCORE" store="&FOREST_STATE";
+15759 +    run;
+15762 +%mend HPDM_HPFOREST;
+NOTE: %INCLUDE (level 1) ending.
+NOTE: Fileref TEMP has been deassigned.
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The HPFOREST procedure is executing in single-machine mode.
+NOTE: Savestate successful. File "C:\Users\Tsu\Desktop\DM Revision\AA1_Tsu Hiao Ping\Workspaces\EMWS1\HPDMForest\score.sasast" has been written.
+NOTE: The number of threads actually used by PROC HPFOREST for parallel processing was 4.
+NOTE: View WORK.HPDMFOREST_TRAINDATA.VIEW used (Total process time):
+      real time           0.36 seconds
+      cpu time            0.06 seconds
+      
+NOTE: There were 108 observations read from the data set EMWS1.PART_TRAIN.
+NOTE: There were 46 observations read from the data set EMWS1.PART_VALIDATE.
+NOTE: The data set EMWS1.HPDMFOREST_VARIMPORT has 9 observations and 8 variables.
+NOTE: The data set EMWS1.HPDMFOREST_ITERATION has 100 observations and 5 variables.
+NOTE: The data set EMWS1.HPDMFOREST_BASELINE has 1 observations and 3 variables.
+NOTE: There were 154 observations read from the data set WORK.HPDMFOREST_TRAINDATA.
+NOTE: The PROCEDURE HPFOREST printed page 3.
+NOTE: PROCEDURE HPFOREST used (Total process time):
+      real time           0.39 seconds
+      cpu time            0.07 seconds
+      
+
+NOTE: The astore procedure is executing in single-machine mode.
+
+NOTE: The PROCEDURE ASTORE printed page 4.
+NOTE: PROCEDURE ASTORE used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.HPDMFOREST_TRAINDATA (memtype=VIEW).
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.EM_USER_MODEL has 1 observations and 8 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+WARNING: Apparent symbolic reference EM_SCORE_OUTPUT not resolved.
+WARNING: Apparent symbolic reference EM_SCORE_OUTPUT not resolved.
+
+NOTE: The file FLOWREF is:
+      Filename=C:\Users\Tsu\Desktop\DM Revision\AA1_Tsu Hiao Ping\Workspaces\EMWS1\HPDMForest\EMFLOWSCORE.sas,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=07Jan2024:02:08:50,
+      Create Time=07Jan2024:02:08:50
+
+NOTE: 45 records were written to the file FLOWREF.
+      The minimum record length was 1.
+      The maximum record length was 129.
+NOTE: There were 9 observations read from the data set EMWS1.HPDMFOREST_VARIABLESET.
+      WHERE ((ROLE='INPUT') and USE in ('D', 'Y')) or ((ROLE='REJECTED') and (USE='Y'));
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PUBREF is:
+      Filename=C:\Users\Tsu\Desktop\DM Revision\AA1_Tsu Hiao Ping\Workspaces\EMWS1\HPDMForest\EMPUBLISHSCORE.sas,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=07Jan2024:02:08:50,
+      Create Time=07Jan2024:02:08:50
+
+NOTE: 26 records were written to the file PUBREF.
+      The minimum record length was 1.
+      The maximum record length was 135.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Fileref PUBREF has been deassigned.
+NOTE: Fileref FLOWREF has been deassigned.
+
+NOTE: The file _HPDMFRF is:
+      Filename=C:\Users\Tsu\Desktop\DM Revision\AA1_Tsu Hiao Ping\Workspaces\EMWS1\HPDMForest\HPDMSCORE.sas,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=07Jan2024:02:08:50,
+      Create Time=07Jan2024:02:08:50
+
+NOTE: 1 record was written to the file _HPDMFRF.
+      The minimum record length was 1.
+      The maximum record length was 1.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Fileref _HPDMFRF has been deassigned.
+15764  
+15765  *------------------------------------------------------------*;
+15766  * End TRAIN: HPDMForest;
+15767  *------------------------------------------------------------*;
+
+15768  *------------------------------------------------------------*;
+15769  * Close any missing semi colons;
+15770  *------------------------------------------------------------*;
+15771  ;
+15772  ;
+15773  ;
+15774  ;
+15775  quit;
+15776  *------------------------------------------------------------*;
+15777  * Close any unbalanced quotes;
+15778  *------------------------------------------------------------*;
+15779  /*; *"; *'; */
+15780  ;
+15781  run;
+15782  quit;
+15783  /* Reset EM Options */
+15784  options formchar="|----|+|---+=|-/\<>*";
+15785  options nocenter ls=256 ps=10000;
+15786  goptions reset=all device=GIF NODISPLAY;
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?><_ROOT_  NumberOfReportedLevels="1E-6" NormalizeReportingVariables="Y" DecileBin="20" LiftEpsilon="1E-6"
+ ProfitEpsilon="1E-6" RoiEpsilon="1E-6" ScoreDistBin="20" RocChart="Y" RocEpsilon="0.01"
+ AssessAllTargetLevels="N" SelectionData="DEFAULT" HPCriteria="DEFAULT" SelectionTable="TRAIN"
+ SelectionCriteria="DEFAULT" SelectionDepth="10" NumberofBins="20" RecomputeAssess="N"
+ TargetName="Churn" ModelId="Tree" ModelDescription="Decision Tree" ModelCriteria="Valid: Average Squared Error"
+ ForceRun="N" RunAction="Train" Component="ModelCompare" RawCreateTime="2020212507.4"
+ CreateTime="07JAN2024:02:08:27" RunId="d72cd68a-a359-4337-95d1-67d266eb071f" StatisticUsed="_VASE_"
+ TargetLabel="" RawLastTimeRun="2020262019.6" RawRunTime="9.1480000019" LastTimeRun="07JAN2024:15:53:40"
+ RunTime="0 Hr. 0 Min. 9.15 Sec.">
+<VARIABLEPROPERTIES/>
+<FILEPROPERTIES/>
+</_ROOT_>

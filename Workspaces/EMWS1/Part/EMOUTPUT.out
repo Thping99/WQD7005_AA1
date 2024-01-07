@@ -1,0 +1,80 @@
+*------------------------------------------------------------*
+User:                Tsu
+Date:                January 07, 2024
+Time:                01:50:08
+*------------------------------------------------------------*
+* Training Output
+*------------------------------------------------------------*
+ 
+ 
+ 
+ 
+Variable Summary
+ 
+          Measurement    Frequency
+Role         Level         Count
+ 
+ID         NOMINAL           1
+INPUT      INTERVAL          4
+INPUT      NOMINAL           5
+TARGET     INTERVAL          1
+TIMEID     INTERVAL          1
+ 
+ 
+ 
+ 
+Partition Summary
+ 
+                                     Number of
+Type             Data Set          Observations
+ 
+DATA        EMWS1.FIMPORT_train         200
+TRAIN       EMWS1.Part_TRAIN            108
+VALIDATE    EMWS1.Part_VALIDATE          46
+TEST        EMWS1.Part_TEST              46
+
+
+*------------------------------------------------------------*
+* Score Output
+*------------------------------------------------------------*
+
+
+*------------------------------------------------------------*
+* Report Output
+*------------------------------------------------------------*
+ 
+ 
+ 
+ 
+Summary Statistics for Interval Targets
+ 
+Data=DATA
+ 
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+ 
+ Churn                 1           0.205               0             200       0       0.4047146771
+ 
+ 
+Data=TEST
+ 
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+ 
+ Churn                 1    0.2826086957               0              46       0       0.4552432062
+ 
+ 
+Data=TRAIN
+ 
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+ 
+ Churn                 1    0.1944444444               0             108       0       0.3976175153
+ 
+ 
+Data=VALIDATE
+ 
+                                                             Number of                     Standard
+Variable         Maximum            Mean         Minimum    Observations    Missing       Deviation    Label
+ 
+ Churn                 1     0.152173913               0              46       0       0.3631584475

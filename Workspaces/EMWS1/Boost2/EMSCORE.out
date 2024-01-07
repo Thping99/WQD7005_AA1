@@ -1,0 +1,10 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+Variable Importance
+
+Obs    NAME              LABEL    NRULES    IMPORTANCE    VIMPORTANCE     RATIO
+
+ 1     Age                          44        1.00000       1.00000      1.00000
+ 2     TotalPurchases               49        0.90320       0.85909      0.95116
+ 3     TotalSpent                   20        0.53188       0.14607      0.27462

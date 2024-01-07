@@ -1,0 +1,15 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+Variable Importance
+
+Obs    NAME                     LABEL    NRULES    IMPORTANCE    VIMPORTANCE     RATIO
+
+ 1     Age                                 31        1.00000       1.00000      1.00000
+ 2     TotalPurchases                      39        0.94257       0.98714      1.04729
+ 3     WebsiteVisitsPerMonth               13        0.79159       0.69544      0.87853
+ 4     TotalSpent                          17        0.68968       0.17207      0.24949
+ 5     FavoriteCategory                    11        0.25015       0.08402      0.33589
+ 6     MembershipLevel                      7        0.22052       0.18568      0.84199
+ 7     Location                             2        0.12303       0.00000      0.00000
+ 8     Gender                               2        0.01120       0.00650      0.58034

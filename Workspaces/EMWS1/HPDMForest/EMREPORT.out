@@ -1,0 +1,103 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Fit Statistics
+
+Target=Churn Target Label=' '
+
+   Fit
+Statistics    Statistics Label                Train    Validation      Test
+
+  _ASE_       Average Squared Error           0.037       0.0207      0.0602
+  _DIV_       Divisor for ASE               108.000      46.0000     46.0000
+  _MAX_       Maximum Absolute Error          0.689       0.6768      0.7199
+  _NOBS_      Sum of Frequencies            108.000      46.0000     46.0000
+  _RASE_      Root Average Squared Error      0.192       0.1438      0.2454
+  _SSE_       Sum of Squared Errors           3.965       0.9514      2.7699
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Assessment Score Rankings
+
+Data Role=TRAIN Target Variable=Churn Target Label=' '
+
+           Number of      Mean        Mean
+Depth    Observations    Target    Predicted
+
+   5           9           1.0      0.94948 
+  10           2           1.0      0.89409 
+  15           6           1.0      0.56167 
+  20           5           0.8      0.31052 
+  25           6           0.0      0.22596 
+  30           5           0.0      0.13842 
+  35           9           0.0      0.08765 
+  40           2           0.0      0.08476 
+  45           6           0.0      0.08068 
+  50           4           0.0      0.05495 
+  55           7           0.0      0.04225 
+  60          18           0.0      0.03848 
+  75          29           0.0      0.03176 
+
+
+Data Role=VALIDATE Target Variable=Churn Target Label=' '
+
+           Number of      Mean        Mean
+Depth    Observations    Target    Predicted
+
+   5           4            1       0.94948 
+  10           1            1       0.83623 
+  15           2            1       0.49245 
+  20           3            0       0.24109 
+  25           2            0       0.11797 
+  30           4            0       0.10331 
+  35           1            0       0.09454 
+  40           2            0       0.09073 
+  45           2            0       0.09059 
+  50           2            0       0.08169 
+  55           3            0       0.06005 
+  60           3            0       0.04513 
+  65           1            0       0.04311 
+  70           3            0       0.04156 
+  75           2            0       0.04060 
+  80           2            0       0.03822 
+  85           9            0       0.03195 
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Assessment Score Distribution
+
+Data Role=TRAIN Target Variable=Churn Target Label=' '
+
+  Range for        Mean        Mean        Number of      Model
+  Predicted       Target    Predicted    Observations     Score
+
+0.904 -  0.949       1       0.94693          10         0.92654
+0.858 -  0.904       1       0.86424           1         0.88064
+0.812 -  0.858       1       0.83623           1         0.83475
+0.720 -  0.766       1       0.72445           1         0.74297
+0.628 -  0.674       1       0.66169           1         0.65119
+0.445 -  0.491       1       0.47846           1         0.46763
+0.307 -  0.353       1       0.32405           6         0.32996
+0.261 -  0.307       0       0.27750           1         0.28407
+0.215 -  0.261       0       0.22596           6         0.23818
+0.123 -  0.169       0       0.15848           3         0.14640
+0.078 -  0.123       0       0.08732          19         0.10051
+0.032 -  0.078       0       0.03671          58         0.05462
+
+
+Data Role=VALIDATE Target Variable=Churn Target Label=' '
+
+  Range for        Mean        Mean        Number of      Model
+  Predicted       Target    Predicted    Observations     Score
+
+0.904 -  0.949       1       0.94948           4         0.92654
+0.812 -  0.858       1       0.83623           1         0.83475
+0.628 -  0.674       1       0.66169           1         0.65119
+0.307 -  0.353       1       0.32320           1         0.32996
+0.261 -  0.307       0       0.27405           1         0.28407
+0.215 -  0.261       0       0.22462           2         0.23818
+0.078 -  0.123       0       0.09646          14         0.10051
+0.032 -  0.078       0       0.03854          22         0.05462
